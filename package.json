@@ -4,11 +4,11 @@
   "version": "0.1.0",
   "author": "Admazely <dev@admaze.ly>",
   "maintainers": [
-    "AndreasMadsen <andreas@admaze.ly>",
+    "AndreasMadsen <andreas@admaze.ly>"
   ],
   "main": "./module.js",
   "scripts": {
-    "test": "tap test.js"
+    "test": "tap ./test"
   },
   "repository" : {
     "type": "git",
@@ -23,10 +23,15 @@
   ],
   "dependencies": {
       "director": "1.1.x",
+      "hashish": "0.0.x",
       "node-uuid": "1.3.x"
   },
   "devDependencies": {
-    "tap": "0.3.x"
+    "tap": "0.3.x",
+    "request": "2.11.x",
+    "bunyan": "0.13.x",
+    "flower": "0.6.x",
+    "async": "0.1.x"
   },
   "license": "MIT",
   "engines": {
