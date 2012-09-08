@@ -17,12 +17,15 @@ function cleanUpError(err) {
     return err;
 }
 
-function Router() {
+function Router(config) {
+    if (!(this instanceof Router)) return new Router(config);
     directorRouter.call(this);
-    this.configure();
 
-    // lets avoid overwriteing any properties used by director
-    var config = this.customConfig = {};
+    // check config object
+    if (!config) throw new TypeError('first argument must be an object');
+    if (!config.logger) throw new TypeError('a bunyan logger must be specified');
+    if (!config.error) throw new TypeError('an error handler must be specified');
+    if (!config.fatal) throw new TypeError('a fatal handler must be specified');
 
     // request/response spefic logic
     this.attach(function () {
@@ -30,29 +33,29 @@ function Router() {
 
         // get or generate a request UUID
         var requestId = this.req.headers['X-Request-Id'] || uuid.v1();
-        this.res.addHeader('X-Request-Id', requestId);
+        this.res.setHeader('X-Request-Id', requestId);
 
         // setup bunyan logger
-        this.log = config.log.child({
-            'req_id': requestId
+        this.log = config.logger.child({
+            'req_id': requestId,
+            'req': this.req,
+            'res': this.res
         });
 
         // this attach functions are executed syncronously, the active domain
         // should be the domain relevant to this request/response
         this.domain = domain.active;
         this.domain.on('error', function (err) {
-            var requestDisposed = false;
-            var handlerDisposed = false;
+            var disposed = false;
 
-            // since error handing isn't always sync,
-            // a domain will be created for the error handing itself
-            var d = domain.create();
-            d.run(function () {
+            try {
                 // stops all I/O related to this request/response
-                if (!requestDisposed) {
-                    self.domain.dispose();
-                    requestDisposed = true;
-                }
+                self.res.once('close', function () {
+                    if (!disposed) {
+                        disposed = true;
+                        self.domain.dispose();
+                    }
+                });
 
                 // remove domain specific properties from the error object
                 err = cleanUpError(err);
@@ -61,24 +64,16 @@ function Router() {
                 err.statusCode = err.statusCode || 500;
 
                 config.error.call(self, err);
-            });
-
-            // there will only be none or one error, since the domain
-            // is disposed immediately
-            d.once('error', function (handleError) {
-                // you really messed up, dispose everything
-                if (!handlerDisposed) {
-                    d.dispose();
-                    handlerDisposed = true;
-                }
-                if (!requestDisposed) {
-                    requestDisposed = true;
-                    self.domain.dispose();
-                }
-
+            } catch (handleError) {
                 // no more protection, do something fail safe PLEASE!
                 config.fatal.call(self, err, handleError);
-            });
+
+                // stops all I/O related to this request/response
+                if (!disposed) {
+                    disposed = true;
+                    self.domain.dispose();
+                }
+            }
         });
 
         //
@@ -101,31 +96,17 @@ function Router() {
     });
 }
 util.inherits(Router, directorRouter);
+module.exports = Router;
 
 Router.prototype.configure = function (options) {
-    if (typeof options !== 'object' || options === null) {
-        throw new Error('configure do only understand objects');
-    }
-
-    if (!options.logger) throw new Error('a bunyan logger must be specified');
-    if (!options.error) throw new Error('an error handler must be specified');
-    if (!options.fatal) throw new Error('a fatal handler must be specified');
+    options = options || {};
 
     // use streams by default
     if (options.hasOwnProperty('stream') === false) {
         options.stream = true;
     }
 
-    // store none director settings
-    this.customConfig.logger = options.logger;
-    this.customConfig.error = options.error;
-    this.customConfig.fatal = options.fatal;
-
     // apply configure object
-    options = hash.copy(options);
-    delete options.logger;
-    delete options.error;
-    delete options.fatal;
     return directorRouter.prototype.configure.call(this, options);
 };
 
@@ -141,7 +122,7 @@ Router.prototype.dispatch = function (req, res, callback) {
 
     // run router in current domain
     return d.run(function () {
-        return directorRouter.prototype.configure.call(self, args, function (errInfo) {
+        return directorRouter.prototype.dispatch.call(self, req, res, function (errInfo) {
             // relay errors to the domain
             if (errInfo) {
                 var err = new Error(errInfo.message);
