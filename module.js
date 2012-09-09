@@ -64,6 +64,10 @@ function Router(config) {
                 // catch is nessarry here.
                 try {
                     // stops all I/O related to this request/response
+                    // TODO: this should actually happen when the HTTP end
+                    // sequence has been send (or the socket closes), since
+                    // the underlying socket can be "keep-alive" and might
+                    // never close.
                     self.res.once('close', function () {
                         self.domain.dispose();
                     });
