@@ -1,7 +1,6 @@
 
 var util = require('util');
 var domain = require('domain');
-var hash = require('hashish');
 var uuid = require('node-uuid');
 
 var directorRouter = require('director').http.Router;
@@ -46,15 +45,11 @@ function Router(config) {
         // should be the domain relevant to this request/response
         this.domain = domain.active;
         this.domain.on('error', function (err) {
-            var disposed = false;
 
             try {
                 // stops all I/O related to this request/response
                 self.res.once('close', function () {
-                    if (!disposed) {
-                        disposed = true;
-                        self.domain.dispose();
-                    }
+                    self.domain.dispose();
                 });
 
                 // remove domain specific properties from the error object
@@ -69,10 +64,7 @@ function Router(config) {
                 config.fatal.call(self, err, handleError);
 
                 // stops all I/O related to this request/response
-                if (!disposed) {
-                    disposed = true;
-                    self.domain.dispose();
-                }
+                self.domain.dispose();
             }
         });
 
