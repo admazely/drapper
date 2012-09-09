@@ -48,6 +48,8 @@ function Router(config) {
             var errorDomain = domain.create();
 
             errorDomain.once('error', function (handleError) {
+                handleError = cleanUpError(handleError);
+
                 // no more protection, do something fail safe PLEASE!
                 config.fatal.call(self, err, handleError);
 
