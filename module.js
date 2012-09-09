@@ -45,27 +45,38 @@ function Router(config) {
         // should be the domain relevant to this request/response
         this.domain = domain.active;
         this.domain.on('error', function (err) {
+            var errorDomain = domain.create();
 
-            try {
-                // stops all I/O related to this request/response
-                self.res.once('close', function () {
-                    self.domain.dispose();
-                });
-
-                // remove domain specific properties from the error object
-                err = cleanUpError(err);
-
-                // if no statusCode was assigned to the error, use 500
-                err.statusCode = err.statusCode || 500;
-
-                config.error.call(self, err);
-            } catch (handleError) {
+            errorDomain.once('error', function (handleError) {
                 // no more protection, do something fail safe PLEASE!
                 config.fatal.call(self, err, handleError);
 
                 // stops all I/O related to this request/response
+                errorDomain.dispose();
                 self.domain.dispose();
-            }
+            });
+
+            errorDomain.run(function () {
+                // Since a domain error event is in a uncaughtException handler
+                // scope, a sync error won't catched by domain. Thats we a try
+                // catch is nessarry here.
+                try {
+                    // stops all I/O related to this request/response
+                    self.res.once('close', function () {
+                        self.domain.dispose();
+                    });
+
+                    // remove domain specific properties from the error object
+                    err = cleanUpError(err);
+
+                    // if no statusCode was assigned to the error, use 500
+                    err.statusCode = err.statusCode || 500;
+
+                    config.error.call(self, err);
+                } catch (e) {
+                    process.emit('uncaughtException', e);
+                }
+            });
         });
 
         //
