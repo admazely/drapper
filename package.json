@@ -1,7 +1,7 @@
 {
   "name": "drapper",
   "description": "Very minimal but opinionated director wrapper",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "Admazely <dev@admaze.ly>",
   "maintainers": [
     "AndreasMadsen <andreas@admaze.ly>"
