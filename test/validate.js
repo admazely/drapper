@@ -1,5 +1,5 @@
 
-var director = require('../module.js');
+var drapper = require('../module.js');
 var test = require('tap').test;
 
 var Logger = require('bunyan');
@@ -12,7 +12,7 @@ test("config validation", function (t) {
         t.plan(1);
 
         try {
-            director();
+            drapper();
         } catch (e) {
             t.equal(e.message, 'first argument must be an object');
             t.end();
@@ -23,7 +23,7 @@ test("config validation", function (t) {
         t.plan(1);
 
         try {
-            director({
+            drapper({
                 'error': function () {},
                 'fatal': function () {}
             });
@@ -36,7 +36,7 @@ test("config validation", function (t) {
         t.plan(1);
 
         try {
-            director({
+            drapper({
                 'fatal': function () {},
                 'logger': log
             });
@@ -49,7 +49,7 @@ test("config validation", function (t) {
         t.plan(1);
 
         try {
-            director({
+            drapper({
                 'error': function () {},
                 'logger': log
             });

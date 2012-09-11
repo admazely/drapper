@@ -1,6 +1,5 @@
 
-var director = require('../module.js');
-//var director = require('director');
+var drapper = require('../module.js');
 var test = require('tap').test;
 
 var Logger = require('bunyan');
@@ -27,7 +26,7 @@ test("failure handing", function (t) {
     var testSelf = null;
 
     // create a pipe router
-    var router = director({
+    var router = drapper({
         error: function (err) {
             throw new Error('failure in error handler');
         },

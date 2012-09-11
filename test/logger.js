@@ -1,5 +1,5 @@
 
-var director = require('../module.js');
+var drapper = require('../module.js');
 var test = require('tap').test;
 
 var Logger = require('bunyan');
@@ -25,7 +25,7 @@ test("logging features", function (t) {
         t.plan(8);
 
         // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) { throw err; },
             fatal: function (err) { throw err; },
             logger: log
@@ -80,7 +80,7 @@ test("logging features", function (t) {
         t.plan(5);
 
         // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) { throw err; },
             fatal: function (err) { throw err; },
             logger: log

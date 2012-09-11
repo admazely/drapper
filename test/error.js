@@ -1,5 +1,5 @@
 
-var director = require('../module.js');
+var drapper = require('../module.js');
 var test = require('tap').test;
 
 var Logger = require('bunyan');
@@ -27,7 +27,7 @@ test("error handling", function (t) {
         t.plan(7);
 
         // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) {
                 this.res.statusCode = err.statusCode;
                 this.res.end(JSON.stringify({error: err.message}));
@@ -84,8 +84,7 @@ test("error handling", function (t) {
     t.test('should return a 404 page if not found', function (t) {
         t.plan(7);
 
-        // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) {
                 this.res.statusCode = err.statusCode;
                 this.res.end(JSON.stringify({error: err.message}));
@@ -138,8 +137,7 @@ test("error handling", function (t) {
     t.test('should catch errors outside event loop', function (t) {
         t.plan(7);
 
-        // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) {
                 this.res.statusCode = err.statusCode;
                 this.res.end(JSON.stringify({error: err.message}));
@@ -200,7 +198,7 @@ test("error handling", function (t) {
         t.plan(7);
 
         // create a pipe router
-        var router = director({
+        var router = drapper({
             error: function (err) {
                 this.res.statusCode = err.statusCode;
                 this.res.end(JSON.stringify({error: err.message}));

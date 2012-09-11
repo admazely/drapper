@@ -1,4 +1,4 @@
-#director-wrapper
+#drapper
 
 The HTTP part of [director](https://github.com/flatiron/director) with some
 extra feature build in.
@@ -13,16 +13,16 @@ extra feature build in.
 ## Installation
 
 ```sheel
-npm install director-wrapper
+npm install drapper
 ```
 
 ## Example
 
 ```JavaScript
-var director = require('director-wrapper');
+var drapper = require('drapper');
 var Logger = require('bunyan');
 
-var router = director({
+var router = drapper({
     error: funcion (err) {
         // once the close event emits, all I/O will be canceled
         this.res.statusCode = err.statusCode;
@@ -62,9 +62,9 @@ http.createServer(router.dispatch.bind(router)).listen(8000);
 The API is almost identical to the [director](https://github.com/flatiron/director)
 module, but with the following exceptions.
 
-### router = director(settings)
+### router = drapper(settings)
 
-The constructor function is the only function exposed by the `director-wrapper`
+The constructor function is the only function exposed by the `drapper`
 module. Its equal to the `director.http.Router` constructor but takes a not
 optional `settings` object with the following properties:
 
