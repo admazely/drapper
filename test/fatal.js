@@ -55,7 +55,10 @@ test("failure handing", function (t) {
             t.type(testSelf.req, 'object');
             t.type(testSelf.res, 'object');
 
-            server.close(t.end.bind(t));
+            // TODO: Should be in server.close but is blocked by
+            // - https://github.com/joyent/node/issues/3982
+            t.end();
+            server.close();
         });
     });
 });
