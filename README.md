@@ -1,4 +1,4 @@
-#drapper
+#drapper[![build status](https://secure.travis-ci.org/admazely/drapper.png)](http://travis-ci.org/admazely/drapper)
 
 The HTTP part of [director](https://github.com/flatiron/director) with some
 extra feature build in.
