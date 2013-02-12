@@ -34,6 +34,13 @@ function Router(config) {
         var requestId = this.req.headers['X-Request-Id'] || uuid.v1();
         this.res.setHeader('X-Request-Id', requestId);
 
+        // disable caching on ajax-requests, needed to make IE work as the other
+        // browsers.
+        // See http://www.dashbay.com/2011/05/internet-explorer-caches-ajax/
+        if (this.req.headers['x-requested-with'] === 'XMLHttpRequest') {
+            this.res.setHeader('Expires', '-1');
+        }
+
         // setup bunyan logger
         this.log = config.logger.child({
             'req_id': requestId,

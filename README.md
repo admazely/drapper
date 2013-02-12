@@ -9,6 +9,7 @@ extra feature build in.
 * request tracking
 * domain integration
 * use streams by default
+* avoid caching ajax GET-calls
 
 ## Installation
 
