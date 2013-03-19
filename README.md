@@ -23,7 +23,7 @@ var drapper = require('drapper');
 var Logger = require('bunyan');
 
 var router = drapper({
-    error: funcion (err) {
+    error: function (err) {
         // once the close event emits, all I/O will be canceled
         this.res.statusCode = err.statusCode;
         this.res.end(err.message);
